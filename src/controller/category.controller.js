@@ -1,0 +1,100 @@
+import { isValidObjectId } from "mongoose"
+import categoryModel from "../model/category.model"
+
+
+const getAllCategories = async (req, res) => {
+    const categories = await categoryModel.find()
+
+    res.send({
+        message: "Succes",
+        data: categories
+    })
+}
+
+const getOneCategory = async (req, res) => {
+    const { id } = req.params
+
+    if(!isValidObjectId(id)) {
+        return res.status(400).send({
+            message: `Given ID: ${id} is not valid Object ID`
+        })
+    }
+
+    const category = await categoryModel.findById(id)
+
+    if(!category){
+        return res.status(404).send({
+            message: `Category with ID: ${id} not found`
+        })
+    }
+
+    res.send({
+        message: "succes",
+        data: category,
+    })
+}
+
+const createCategory = async (req, res) => {
+    const { name } = req.body
+
+    const foundedCaategory = await categoryModel.findOne({ name })
+
+    if (foundedCaategory) {
+        return res.status(409).send({
+            message: `Category: ${name} allaqachon mavjud`, 
+            
+        })
+    }
+
+    const category = await categoryModel.create({ name })
+
+    res.send({
+        message: "succes",
+        data: category,
+    })
+}
+
+const updateCategory = async (req, res) => {
+    const { id } = req.params
+    const { name } = req.body
+
+    if(!isValidObjectId(id)) {
+        return res.status(400).send({
+            message: `Given ID: ${id} is not valid Object ID`,
+        })
+    }
+
+    const foundedCaategory = await categoryModel.findOne({ name })
+
+    if (foundedCaategory) {
+        return res.status(409).send({
+            message: `Category: ${name} allaqachon mavjud`,
+        })
+    }
+
+    const updateCategory = await categoryModel.findByIdAndUpdate(id, { name })
+
+    res.send({
+        message: "succes",
+        data: updateCategory,
+    })
+}
+
+const deleteCategory = async (req,res) => {
+    const { id } = req.params
+
+    if (!isValidObjectId(id)) {
+        return res.status(400).send({
+            message: `Given ID: ${id} is not valid Object ID`
+        })
+    }
+
+    const category = await categoryModel.findByIdAndDelete(id)
+
+    res.send({
+        message: "succes",
+        data: category,
+    })
+}
+
+export default { getAllCategories, createCategory, getOneCategory, updateCategory,deleteCategory }

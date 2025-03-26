@@ -1,5 +1,9 @@
 import app from "./app.js"
+import { PORT } from "./config/app.config.js"
+import connectDB from "./config/mongo.config.js"
 
-app.listen(3000, ()=>{
-    console.log("server run")
+await connectDB()
+
+app.listen(PORT, ()=>{
+    console.log(`Server running on port ${PORT}`)
 })
